@@ -96,6 +96,7 @@ class Constant(Expression):
         device = data.data.device
         dtype = data.data.dtype
         days = period.stop - period.start - 1 + data.n_days
+        # print(period.stop, period.start, data.n_days)
         return torch.full(size=(days, data.n_stocks),
                           fill_value=self._value, dtype=dtype, device=device)
 

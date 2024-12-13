@@ -97,7 +97,7 @@ def main(
 ):
     reseed_everything(seed)
 
-    device = torch.device('cuda:0')
+    device = torch.device('cpu')
     close = Feature(FeatureType.CLOSE)
     target = Ref(close, -20) / close - 1
 
@@ -110,10 +110,10 @@ def main(
                            end_time='2020-12-31')
     data_test = StockData(instrument=instruments,
                           start_time='2021-01-01',
-                          end_time='2022-12-31')
+                          end_time='2021-12-31')
     calculator_train = QLibStockDataCalculator(data_train, target)
     calculator_valid = QLibStockDataCalculator(data_valid, target)
-    calculator_test = QLibStockDataCalculator(data_test, target)
+    calculator_test = QLibStockDataCalculator(data_valid, target)
 
     pool = AlphaPool(
         capacity=pool_capacity,
@@ -121,7 +121,7 @@ def main(
         ic_lower_bound=None,
         l1_alpha=5e-3
     )
-    env = AlphaEnv(pool=pool, device=device, print_expr=True)
+    env = AlphaEnv(pool=pool, device=device, print_expr=False)
 
     name_prefix = f"new_{instruments}_{pool_capacity}_{seed}"
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -129,7 +129,7 @@ def main(
     checkpoint_callback = CustomCallback(
         save_freq=10000,
         show_freq=10000,
-        save_path='/path/for/checkpoints',
+        save_path='/home/zmao/github/alphagen/train/checkpoints',
         valid_calculator=calculator_valid,
         test_calculator=calculator_test,
         name_prefix=name_prefix,
@@ -152,7 +152,7 @@ def main(
         gamma=1.,
         ent_coef=0.01,
         batch_size=128,
-        tensorboard_log='/path/for/tb/log',
+        tensorboard_log='/home/zmao/github/alphagen/train/tb/log',
         device=device,
         verbose=1,
     )
@@ -172,6 +172,7 @@ def fire_helper(
     if isinstance(seed, int):
         seed = (seed, )
     default_steps = {
+        5: 250_000,
         10: 250_000,
         20: 300_000,
         50: 350_000,

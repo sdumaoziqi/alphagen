@@ -29,6 +29,7 @@ class TopKSwapNStrategy(BaseSignalStrategy, Strategy):
                       position_df: Optional[pd.DataFrame] = None
                      ) -> Tuple[List[StockCode], List[StockCode]]:
         signal = dict(zip(status_df['code'], status_df['signal']))
+        # print(status_df)
         unbuyable = set(record['code'] for record in status_df.to_dict('records') if not record['buyable'])
         unsellable = set(record['code'] for record in status_df.to_dict('records') if not record['sellable'])
 
@@ -53,12 +54,13 @@ class TopKSwapNStrategy(BaseSignalStrategy, Strategy):
             if days_holded[stock_id] < self.min_hold_days:
                 continue
             holding_priority.append(stock_id)
+        # print(holding_priority)
 
         for stock_id in sorted(not_holding_stocks, key=signal.get, reverse=True):
             if stock_id in unbuyable:
                 continue
 
-            can_swap = len(to_buy) >= self.n_swap and holding_priority and signal[stock_id] > signal[holding_priority[-1]]
+            can_swap = len(to_buy) < self.n_swap and holding_priority and signal[stock_id] > signal[holding_priority[-1]]
             if can_swap:
                 to_sell.append(holding_priority.pop())
                 to_buy.append(stock_id)
@@ -66,18 +68,19 @@ class TopKSwapNStrategy(BaseSignalStrategy, Strategy):
                 to_open.append(stock_id)
             else:
                 break
-
+        # print(to_buy, to_open, to_sell, self.n_swap)
         return to_buy + to_open, to_sell
 
     def generate_trade_decision(self, execute_result=None):
         trade_step = self.trade_calendar.get_trade_step()
         trade_start_time, trade_end_time = self.trade_calendar.get_step_time(trade_step)
         pred_start_time, pred_end_time = self.trade_calendar.get_step_time(trade_step, shift=1)
+        # print(trade_start_time, trade_end_time, pred_start_time, pred_end_time)
         pred_score = self.signal.get_signal(start_time=pred_start_time, end_time=pred_end_time)
         time_per_step = self.trade_calendar.get_freq()
         current_temp = copy.deepcopy(self.trade_position)
         cash = current_temp.get_cash()
-
+        # print(time_per_step)
         if isinstance(pred_score, pd.DataFrame):
             pred_score = pred_score.iloc[:, 0]
         if pred_score is None:
@@ -93,6 +96,7 @@ class TopKSwapNStrategy(BaseSignalStrategy, Strategy):
         position = pd.DataFrame.from_records([
             get_holding(stock_id) for stock_id in current_temp.get_stock_list()
         ], columns=['code', 'days_holded'])
+        # print(position)
 
         def get_status(stock_id: str):
             if isnan(stock_signal[stock_id]):
