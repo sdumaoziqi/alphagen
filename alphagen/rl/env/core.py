@@ -179,8 +179,9 @@ class EcxessEnvCore(gym.Env):
                     self.best_reward.append(ret)
                 else:
                     idx = np.argmin(np.array(self.best_reward))
-                    self.best_expr[idx] = expr
-                    self.best_reward[idx] = ret
+                    if ret > self.best_reward[idx]:
+                        self.best_expr[idx] = expr
+                        self.best_reward[idx] = ret
             return ret
         except OutOfDataRangeError:
             return 0.
