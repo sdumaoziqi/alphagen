@@ -65,7 +65,7 @@ class CustomCallback(BaseCallback):
             fcst = self.test_calculator._calc_alpha(expr)
             data_df = self.data_test.make_dataframe(fcst)
             ret = self.test_qlib_backtest.run(data_df)
-            ret = ret["annual_excess_return"]
+            ret = ret["information_ratio"]
             test_reward.append(ret)
         if len(test_reward) > 0:
             self.logger.record("test_excess/max", np.max(np.array(test_reward)))

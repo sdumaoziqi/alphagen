@@ -171,7 +171,7 @@ class EcxessEnvCore(gym.Env):
             fcst = self.calculator._calc_alpha(expr)
             data_df = self.data.make_dataframe(fcst)
             ret = self.qlib_backtest.run(data_df)
-            ret = ret["annual_excess_return"]
+            ret = ret["information_ratio"]
             self.eval_cnt += 1
             if ret > 0:
                 if len(self.best_expr) < self.pool_size:
