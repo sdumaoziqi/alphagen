@@ -16,3 +16,4 @@ _stable_baselines3_version
 *.zip
 *.png
 *.playground
+tmp.log

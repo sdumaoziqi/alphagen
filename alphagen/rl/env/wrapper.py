@@ -5,7 +5,7 @@ import numpy as np
 from alphagen.config import *
 from alphagen.data.tokens import *
 from alphagen.models.alpha_pool import AlphaPoolBase, AlphaPool
-from alphagen.rl.env.core import AlphaEnvCore
+from alphagen.rl.env.core import AlphaEnvCore, EcxessEnvCore
 
 SIZE_NULL = 1
 SIZE_OP = len(OPERATORS)
@@ -95,3 +95,6 @@ class AlphaEnvWrapper(gym.Wrapper):
 
 def AlphaEnv(pool: AlphaPoolBase, **kwargs):
     return AlphaEnvWrapper(AlphaEnvCore(pool=pool, **kwargs))
+
+def ExcessEnv(data_train, data_valid, **kwargs):
+    return AlphaEnvWrapper(EcxessEnvCore(data_train, data_valid, **kwargs))

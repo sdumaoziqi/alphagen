@@ -152,8 +152,8 @@ class QlibBacktest:
             import json
             write_all_text(output_prefix + "-result.json", json.dumps(result, indent=4))
 
-        print(report)
-        print(result)
+        # print(report)
+        # print(result)
         return report if return_report else result
 
     def _analyze_report(self, report: pd.DataFrame) -> BacktestResult:
