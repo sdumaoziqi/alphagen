@@ -106,14 +106,14 @@ def main(
 
     # You can re-implement AlphaCalculator instead of using QLibStockDataCalculator.
     data_train = StockData(instrument=instruments,
-                           start_time='2017-01-01',
-                           end_time='2019-07-31')
+                           start_time='2016-01-01',
+                           end_time='2018-07-31')
     data_valid = StockData(instrument=instruments,
-                           start_time='2020-01-01',
-                           end_time='2021-12-31')
+                          start_time='2019-01-01',
+                          end_time='2019-12-31')
     data_test = StockData(instrument=instruments,
-                          start_time='2020-01-01',
-                          end_time='2022-12-31')
+                          start_time='2019-01-01',
+                          end_time='2019-12-31')
     env = ExcessEnv(data_train, data_valid)
 
     name_prefix = f"new_{instruments}_{pool_capacity}_{seed}"
